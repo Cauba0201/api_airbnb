@@ -37,7 +37,7 @@ app.post("/register", async (req, res, next) => {
     const userDoc = await User.create({
       name,
       email,
-      password: brcypt.hashSync(password, bcryptSalt),
+      password: brcypt.hash(password, bcryptSalt),
     });
 
     res.json(userDoc);
@@ -51,10 +51,9 @@ app.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
   const userDoc = await User.findOne({ email });
   if (userDoc) {
-    const pass = brcypt.compareSync(password, userDoc.password);
+    const pass = brcypt.compare(password, userDoc.password);
     if (pass) {
-      jwt.sign(
-        { email: userDoc.email, id: userDoc._id, name: userDoc.name },
+      jwt.sign({ email: userDoc.email, id: userDoc._id, name: userDoc.name },
         jwtSecret,
         {},
         (error, token) => {
